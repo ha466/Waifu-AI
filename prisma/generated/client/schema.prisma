@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model AppConfig {
+  id   String @id @default("main")
+  data String // JSON stringified settings
+}
+
+model Asset {
+  id        Int      @id @default(autoincrement())
+  type      String // "model" or "background"
+  name      String
+  path      String   @unique
+  createdAt DateTime @default(now())
+}
+
+model MemoryFact {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+}
