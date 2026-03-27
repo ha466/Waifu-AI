@@ -9,9 +9,6 @@
 /coverage
 
 # database
-/prisma/dev.db
-/prisma/dev.db-journal
-dev.db
 /prisma/db.sqlite
 /prisma/db.sqlite-journal
 db.sqlite
@@ -23,16 +20,6 @@ next-env.d.ts
 
 # production
 /build
-
-# assets and models
-*.onnx
-/tts/assets/
-/public/tts/
-/public/model/custom/
-/public/backgrounds/
-/public/static/model/
-!/public/backgrounds/.gitkeep
-!/public/model/custom/.gitkeep
 
 # misc
 .DS_Store
@@ -56,3 +43,20 @@ yarn-error.log*
 *.tsbuildinfo
 
 /generated/prisma
+
+# readme
+README.md
+
+# build output
+/dist
+
+# dev database
+prisma/dev.db
+
+# lock file
+pnpm-lock.yaml
+
+# model & tts assets
+public/model/custom/
+public/tts/
+tts/assets/

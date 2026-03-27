@@ -176,12 +176,30 @@ export default function ChatInput() {
     };
   }, [setAudioAnalyser]);
 
-  // ── TTS ──
+  // ── TTS (cached module ref) ──
+  const ttsModuleRef = useRef<typeof import("~/lib/LocalTTS") | null>(null);
+
+  // Pre-warm TTS engine on first user interaction so model loads early
+  useEffect(() => {
+    if (ttsProvider !== "local") return;
+    const prewarm = async () => {
+      try {
+        const mod = await import("~/lib/LocalTTS");
+        ttsModuleRef.current = mod;
+        await mod.ensureModelLoaded();
+        await mod.loadVoiceStyle(localVoiceStyle as VoiceStyleId);
+      } catch { /* best-effort prewarm */ }
+    };
+    const handle = () => { prewarm(); };
+    document.addEventListener("click", handle, { once: true });
+    return () => document.removeEventListener("click", handle);
+  }, [ttsProvider, localVoiceStyle]);
+
   const synthesizeSentence = useCallback(async (sentence: string): Promise<AudioBuffer | null> => {
     try {
       if (ttsProvider === "local") {
-        const { synthesizeLocal } = await import("~/lib/LocalTTS");
-        const wav = await synthesizeLocal(sentence, localVoiceStyle as VoiceStyleId, ttsSteps);
+        if (!ttsModuleRef.current) ttsModuleRef.current = await import("~/lib/LocalTTS");
+        const wav = await ttsModuleRef.current.synthesizeLocal(sentence, localVoiceStyle as VoiceStyleId, ttsSteps);
         return await audioContextRef.current!.decodeAudioData(wav);
       }
       const res = await fetch("/api/synthasize", {

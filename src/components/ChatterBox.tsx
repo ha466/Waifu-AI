@@ -10,25 +10,10 @@ export default function ChatterBox() {
   const [isLoading] = useAtom(isLoadingAtom);
   const [isPlaying] = useAtom(audioPlayingAtom);
   const [key, setKey] = useState(0);
-  const [displayedText, setDisplayedText] = useState("");
 
   useEffect(() => {
     setKey(prevKey => prevKey + 1);
-    setDisplayedText("");
   }, [message]);
-
-  useEffect(() => {
-    if (!message?.content) return;
-    const text = message.content as string;
-    let i = 0;
-    setDisplayedText("");
-    const interval = setInterval(() => {
-      setDisplayedText(text.slice(0, i));
-      i++;
-      if (i > text.length) clearInterval(interval);
-    }, 15);
-    return () => clearInterval(interval);
-  }, [message?.content]);
 
   if (!message && !isLoading) {
     return null;
@@ -48,9 +33,8 @@ export default function ChatterBox() {
           key={key}
           className="flex max-w-[340px] justify-start rounded-2xl rounded-br-sm border-[2px] border-white/20 bg-black/60 backdrop-blur-md p-4 shadow-lg animate-message-appear"
         >
-          <span className="text-sm font-medium text-white/90 leading-relaxed text-left whitespace-pre-wrap">
-            {displayedText}
-            <span className="inline-block w-1.5 h-3 ml-0.5 align-baseline bg-indigo-400 animate-pulse" />
+          <span className="text-sm font-medium text-white/90 leading-relaxed text-left">
+            {message?.content as string}
           </span>
         </div>
       )}
