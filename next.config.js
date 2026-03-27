@@ -1,7 +1,10 @@
-/**
- * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
- * for Docker builds.
- */
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Validate environment variables
 await import("./src/env.js");
 
 /** @type {import("next").NextConfig} */
@@ -15,6 +18,12 @@ const config = {
   webpack: (config, { isServer }) => {
     // Disable resolving symlinks to their absolute paths to prevent pnpm mapping crashes
     config.resolve.symlinks = false;
+
+    // Define ~ alias for webpack if not handled by Next.js
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "~": path.resolve(__dirname, "src"),
+    };
 
     // Exclude onnxruntime-node from client bundles (we only need onnxruntime-web)
     if (!isServer) {
